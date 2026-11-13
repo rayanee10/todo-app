@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+</head>
+<style>
+    body { font-family: sans-serif; padding: 20px; }
+    ul { list-style: none; padding: 0; }
+    li { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+    button { cursor: pointer; }
+    .delete-btn { background: #ef4444; color: white; border: none; padding: 3px 8px; border-radius: 4px; }
+    .done-btn { background: #0ede8b; color: white; border: none; padding: 3px 8px; border-radius: 4px; }
+    .btn { background: #096bdb; color: white; border: none; padding: 3px 8px; border-radius: 4px; }
+    li.completed  { text-decoration: line-through; color: #888; }
+  </style>
+<body>
+    <div>
+        <h1>To Do List</h1>
+        
+        <input type="text" id="task" placeholder="Enter your task..." required>
+        <button class="btn" id="btn">Add</button>
+        <ul id="list"></ul>
+    </div>
+
+    <script>
+        const input = document.getElementById('task')
+        const btn = document.getElementById('btn')
+        const ul = document.getElementById('list')
+
+        btn.addEventListener('click',async()=>{
+            let tasktext = input.value.trim()
+            if(tasktext === ''){
+                alert('enter a task first please')
+                return
+            }
+
+            try{
+                const response = await fetch('http://localhost:3000/api/tasks' , {
+                    method: 'post',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ task: tasktext })
+                    
+                })
+                if(response.ok){
+                    const result = await response.json()
+
+
+                    const li = document.createElement('li')
+                    const donebtn = document.createElement('button')
+                    const deletebtn = document.createElement('button')
+
+                    donebtn.classList.add('done-btn')
+                    deletebtn.classList.add('delete-btn')
+
+                    li.textContent = tasktext + " "
+                    deletebtn.textContent = 'delete'
+                    donebtn.textContent = 'done'
+
+                    deletebtn.addEventListener('click',async()=>{
+                        try{
+                            const deleteresponse = await fetch(`http://localhost:3000/api/tasks/${result.id}` , {
+                                method : 'DELETE'
+                            })
+
+                            if(deleteresponse.ok){
+                                li.remove()
+                            }else{
+                                alert('ther was an error deleting this task')
+                            }
+
+                        }catch(err){
+                             console.log(' there was an error deleting this task')
+                        }
+                         
+                        
+                    })
+
+                    donebtn.addEventListener('click',async()=>{
+                            try{
+                                const doneresponse = await fetch(`http://localhost:3000/api/tasks/${result.id}` , {
+                                    method :'PUT'
+                                })
+                             if(doneresponse.ok){
+                                li.classList.toggle('completed')
+                             }else{
+                                 alert("there was an error checking this task")
+                             }
+                            }catch(err){
+
+                            }
+                        })
+
+
+
+                    li.appendChild(deletebtn)
+                    li.appendChild(donebtn)
+                    ul.appendChild(li)
+
+                    input.value = '';
+                }
+             
+            }catch(error){
+
+            }
+            
+        })
+    </script>   
+</body>
+</html>

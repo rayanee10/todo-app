@@ -1,0 +1,37 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1> products list</h1>
+        <button id="btn"> bring</button>
+        <ul id="products-list"> </ul>
+    </div>
+   <script>
+    const btn = document.getElementById('btn')
+    const list = document.getElementById('products-list')
+
+    btn.addEventListener('click', async ()=>{
+try{
+    const response = await fetch('http://localhost:3000/api/products')
+    const result = await response.json()
+
+
+list.innerHTML = ''
+
+    result.data.forEach( product  => {
+      const li = document.createElement('li')
+      li.textContent = `${product.name} - $${product.price}`
+      list.appendChild(li)
+    })
+
+}catch(error){
+console.log('ther was an error')
+}
+    })
+   </script> 
+</body>
+</html>

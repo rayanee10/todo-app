@@ -1,0 +1,38 @@
+<html lang="en">
+
+<body>
+   <form id="form">
+      <input type="email" placeholder="enter your email" id="email" required>
+      <input type="text" placeholder="enter your name" id="name" >
+      <button id="submit">send</button>
+
+   </form>
+ <script>
+const form = document.getElementById('form')
+
+
+form.addEventListener('submit', async (e)=>{
+   e.preventDefault();
+const name = document.getElementById('name').value 
+const email = document.getElementById('email').value
+
+try{
+   const response = await fetch('http://localhost:3000/api/users',{
+      method:'POST',
+      headers: {'Content-Type' : 'application/json'} ,
+       body : JSON.stringify({name , email})
+   })
+   const result = await response.json()
+   console.log('srver response ', result)
+   
+ form.reset()
+}catch(error){
+   console.log('ther was an error')
+}
+
+
+
+})
+ </script>  
+</body>
+</html>
